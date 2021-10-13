@@ -1,10 +1,37 @@
-const { response } = require('express')
 const express = require('express')
-const app = express()
+const app = module.exports = express()
+const router = require('./routes')
+const cors = require('cors');
+const mongoose = require('mongoose');
+const dotenv = require("dotenv")
+require('dotenv').config();
 
-app.use(express.json())
+const PORT = process.env.PORT || 3001
 
-const http = require('http')
+app.use(cors());
+
+//conection DB
+mongoose.connect(
+    process.env.MONGO_URI,{
+        useUnifiedTopology: true,
+        useNewUrlParser: true        
+    })
+    .then((result) =>{
+        console.log('Database connected')
+    })
+    .catch((error)=>{
+        console.log('Database not connected, error: ' , error)
+    })
+app.get('/',(request, response) =>  {
+    response.send('<h1>MCMA</h1>')
+})
+app.use('/', router)
+
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+})
+
+/*const http = require('http')
 let machines = 
 [{
     "id":1,
@@ -21,10 +48,6 @@ let machines =
     "machine":"Mercedes-Benz",
     "tipo_caldera":"Cement Mason"
 }]
-app.get('/',(request, response) =>  {
-    response.send('<h1>MCMA</h1>')
-
-})
 app.get('/api/getmachines',(request,response) =>{
     response.json(machines)
 })
@@ -62,7 +85,5 @@ app.post('/api/machine',(request,response)=>{
     machines = machines.concat(newMachine)
     response.json(newMachine)
 })
-const PORT = 3001
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-})
+
+*/
